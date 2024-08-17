@@ -1,0 +1,11 @@
+docker buildx build --platform linux/amd64 -t lum-api-dev:latest . --load
+docker run -d -p 8000:8000 --name my-fastapi-container --env-file .env lum-api-dev:latest
+
+az login
+az acr login --name acrlumdev
+
+docker tag lum-api-dev:latest acrlumdev.azurecr.io/lum-api-dev:latest
+docker tag lum-api-dev:latest acrlumdev.azurecr.io/lum-api-dev:0.1.1
+
+docker push acrlumdev.azurecr.io/lum-api-dev:latest
+docker push acrlumdev.azurecr.io/lum-api-dev:0.1.1
