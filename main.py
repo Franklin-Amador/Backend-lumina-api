@@ -9,7 +9,7 @@ from typing import List, Dict, Union
 from models.Instructores import SolicitudInstructor, Solicitud
 
 from controllers.firebase import register_user_firebase, login_user_firebase
-from controllers.instructores import get_instructores_info, get_SolicitudesInstructor, post_Instructores, rechazar_Solicitud
+from controllers.instructores import get_instructores_info, get_SolicitudesInstructor, post_Instructores, rechazar_Solicitud, get_especialidades, get_categorias
 from utils.security import validate
 from utils.sendmail import password_reset_email, welcome_email
 
@@ -52,22 +52,34 @@ async def user(request: Request):
  
  
 @app.get("/instructores", response_model=List[Dict[str, Union[str, int]]])
-async def get_instructores():
+@validate
+async def get_instructores(request: Request):
     return await get_instructores_info()
 
 
 @app.get("/solicitudes/instructor", response_model=List[SolicitudInstructor])
-async def get_solicitudes_instructor():
+@validate
+async def get_solicitudes_instructor(request: Request):
     return await get_SolicitudesInstructor()
 
 @app.post("/solicitud")
+@validate
 async def inst(inst: Solicitud):
     return await post_Instructores(inst)
     
     
 @app.put("/solicitudr/{Id_Solicitud}")
+@validate
 async def inst(inst: Solicitud):
    return await rechazar_Solicitud(inst)
+
+@app.get("/especialidades")
+async def especialidades():
+    return await get_especialidades()
+
+@app.get("/categorias")
+async def categorias():
+    return await get_categorias()
 
 # Endpoint para solicitar el restablecimiento de contraseña
 @app.post("/r/password")

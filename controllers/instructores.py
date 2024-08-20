@@ -140,7 +140,7 @@ async def post_Instructores(inst: Solicitud):
 
 
 # ?funcion para rechazar una solicitud, se envia un correo al solicitante
-async def rechazar_Solicitud(inst: Solicitud):
+async def rechazar_Solicitud(inst: Solicitud):  
     try:
         conn = await get_db_connection()
         cursor = conn.cursor()
@@ -162,3 +162,22 @@ async def rechazar_Solicitud(inst: Solicitud):
             conn.close()    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener la información de instructores: {e}")
+    
+    
+# ?funcion para obtener la informacion de las especialidades
+async def get_especialidades():
+    query = "SELECT * FROM lum.Especialidades"
+    try:
+        result = await fetch_query_as_json(query)
+        return json.loads(result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+# ?funcion para obtener la informacion de las categorias
+async def get_categorias():
+    query = "SELECT * FROM lum.Categorias"
+    try:
+        result = await fetch_query_as_json(query)
+        return json.loads(result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

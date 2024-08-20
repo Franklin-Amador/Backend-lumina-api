@@ -95,64 +95,6 @@ async def register_user_firebase(user: UserRegister):
 
 
 # ? Autenticar usuario con Firebase Authentication ya funcionando 
-# async def login_user_firebase(user: UserLogin):
-#     try:
-#         # Autenticar usuario con Firebase Authentication usando la API REST
-#         logger.info(f"Iniciando proceso de login para el usuario: {user.email}")
-        
-#         api_key = os.getenv("FIREBASE_API_KEY")  # Reemplaza esto con tu apiKey de Firebase
-#         url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
-#         payload = {
-#             "email": user.email,
-#             "password": user.password,
-#             "returnSecureToken": True
-#         }
-#         response = requests.post(url, json=payload)
-#         response_data = response.json()
-
-#         if "error" in response_data:
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail=f"Error al autenticar usuario: {response_data['error']['message']}"
-#             )
-
-#        # query = f"SELECT active FROM lum.Usuarios WHERE mail = '{user.email}'"
-
-#         query = f"""
-#         SELECT i.active
-#         FROM lum.Usuarios u
-#         JOIN lum.Instructores i ON u.Id_Usuario = i.Id_Usuario
-#         WHERE u.mail = '{user.email}'
-#         """
-        
-      
-#         try:
-#             logger.info(f"QUERY LIST")
-#             result_json = await fetch_query_as_json(query)
-#             result_dict = json.loads(result_json)
-#             return {
-#                 "message": "Usuario autenticado exitosamente",
-#                 "idToken": create_jwt_token(
-#                     user.email,
-#                     result_dict[0]["active"]
-#                 )
-#             }
-            
-       
-#         except Exception as e:
-#             raise HTTPException(status_code=500, detail=str(e))
-
-
-#     except Exception as e:
-#         error_detail = {
-#             "type": type(e).__name__,
-#             "message": str(e),
-#             "traceback": traceback.format_exc()
-#         }
-#         raise HTTPException(
-#             status_code=400,
-#             detail=f"Error al autenticar usuario: {error_detail}"
-#         )
      
 async def login_user_firebase(user: UserLogin):
     try:

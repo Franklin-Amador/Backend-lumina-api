@@ -36,6 +36,6 @@ class UserRegister(BaseModel):
 
 class MailSend(BaseModel):
     email: str
-    password: Optional[str]
+    
     
     
