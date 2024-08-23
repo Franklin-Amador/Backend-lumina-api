@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from utils.database import fetch_query_as_json, get_db_connection
 from utils.sendmail import welcome_email
-from models.Instructores import Solicitud
+from models.Instructores import Solicitud, Inscripcion
 import json
 import random
 
@@ -106,25 +106,25 @@ async def post_Instructores(inst: Solicitud):
 
         result_dict = results[0] if results else {}
         resultado = result_dict.get('Resultado')
-        email = result_dict.get('CorreoInstructor')
+        emaild = result_dict.get('CorreoInstructor')
 
         if resultado != 'Éxito':
             raise HTTPException(status_code=500, detail=f"Error en el procedimiento almacenado: {resultado}")
 
-        if not email:
+        if not emaild:
             raise HTTPException(status_code=404, detail="No se encontró el correo para el instructor")
 
         # Generar un número aleatorio de 4 dígitos y convertirlo en una cadena
-        random_number = str(random.randint(1000, 9999))
+        random_number = "Fr4n" + str(random.randint(1000, 9999))
         
         # Crear usuario en Firebase Authentication
         user_record = firebase_auth.create_user(
-            email=email,
+            email=emaild,
             password=random_number # Usar una contraseña por defecto
         )
         
         # Enviar correo de bienvenida
-        await welcome_email(email, random_number)
+        await welcome_email(emaild, random_number)
         
         return {
             "success": True,
@@ -145,9 +145,10 @@ async def rechazar_Solicitud(inst: Solicitud):
         conn = await get_db_connection()
         cursor = conn.cursor()
         try:
+            # Asegúrate de que inst.Id_Solicitud se pasa como una tupla
             cursor.execute(
-                "EXEC  lum.RechazarSolicitud @Id_Solicitud = ?",
-                inst.Id_Solicitud
+                "EXEC lum.RechazarSolicitud @Id_Solicitud = ?",
+                (inst.Id_Solicitud,)
             )
             conn.commit()
             return {
@@ -161,8 +162,8 @@ async def rechazar_Solicitud(inst: Solicitud):
             cursor.close()
             conn.close()    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener la información de instructores: {e}")
-    
+        raise HTTPException(status_code=500, detail=f"Error al procesar la solicitud: {e}")
+
     
 # ?funcion para obtener la informacion de las especialidades
 async def get_especialidades():
@@ -181,3 +182,33 @@ async def get_categorias():
         return json.loads(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+# ?funcion para inscribir un instructor
+async def create_solicitud(solicitud: Solicitud):
+    query = """
+        INSERT INTO lum.Solicitudes
+        (Id_Especialidad, primer_Nombre, segundo_Nombre, primer_Apellido, segundo_Apellido, mail, Descripción, ImagenUrl)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """
+    params = (
+        solicitud.Id_Especialidad,
+        solicitud.primer_Nombre,
+        solicitud.segundo_Nombre,
+        solicitud.primer_Apellido,
+        solicitud.segundo_Apellido,
+        solicitud.mail,
+        solicitud.Descripción,
+        solicitud.ImagenUrl
+    )
+    try:
+        # Ejecutar la consulta de inserción
+        result = await fetch_query_as_json(query, params, commit=True)
+        return {
+            "message": "Solicitud enviada exitosamente",
+            "success": True
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+   

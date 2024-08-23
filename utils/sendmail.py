@@ -57,15 +57,15 @@ async def password_reset_email(email: MailSend):
         print(f"Error inesperado: {e}")
         return {"success": False, "message": f"Error inesperado: {str(e)}"}
 
-# * Función para enviar el correo de bienvenida
-async def welcome_email(email: MailSend):
+# * Función para enviar el correo de bienvenida 
+async def welcome_email(email: str, password: str):
     try:
         # Configurar yagmail
         yag = yagmail.SMTP(EMAIL_USERNAME, EMAIL_PASSWORD)
 
         # Enviar el correo
         subject = "Bienvenido a nuestra plataforma Lumina"
-        contents = f"Has sido aprobado, recuerda cambiar tu contraseña. Tu contraseña es: {email.password}"
+        contents = f"Has sido aprobado, recuerda cambiar tu contraseña. Tu contraseña es: {password}"
                 
         yag.send(to=email, subject=subject, contents=contents)
                 

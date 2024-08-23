@@ -8,6 +8,13 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+    @field_validator('email')
+    def email_length(cls, v):
+        if validate_sql_injection(v):
+            raise ValueError('Invalid email')
+        return v
+    
+       
 class UserRegister(BaseModel):
     email: str
     password: str
@@ -36,6 +43,6 @@ class UserRegister(BaseModel):
 
 class MailSend(BaseModel):
     email: str
-    
+    password: Optional[str] = None
     
     

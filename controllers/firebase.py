@@ -132,7 +132,7 @@ async def login_user_firebase(user: UserLogin):
             # Información adicional a incluir en el token
             user_info = {
                 "email": user.email,
-                "id_estado": result_dict[0].get("Id_Estado"),  # Añadido id_estado
+                "id_estado": result_dict[0].get("Id_Estado"),  
                 "rol_id": result_dict[0].get("Id_Rol"),
                 "nombre": result_dict[0].get("primer_Nombre"),
                 "apellido": result_dict[0].get("primer_Apellido")
@@ -140,7 +140,8 @@ async def login_user_firebase(user: UserLogin):
 
             return {
                 "message": "Usuario autenticado exitosamente",
-                "idToken": create_jwt_token(**user_info)
+                "idToken": create_jwt_token(**user_info),
+                "user": user_info
             }
         else:
             raise HTTPException(
@@ -149,11 +150,11 @@ async def login_user_firebase(user: UserLogin):
             )
             
     except Exception as e:
-        error_detail = {"message": str(e)}
-        logger.error(f"Error en el proceso de login: {error_detail}")
+        
+        logger.error(f"Error en el proceso de login")
         raise HTTPException(
             status_code=400,
-            detail=f"Error al autenticar usuario: {error_detail['message']}"
+            detail=f"Error al autenticar usuario"
         )
 
 

@@ -16,6 +16,7 @@ class SolicitudInstructor(BaseModel):
     Fecha_Solicitud: date
     Estado: str
     Descripción: Optional[str] = None
+    ImagenUrl: Optional[str] = None
 
     class Config:
         json_encoders = {
@@ -26,3 +27,13 @@ class SolicitudInstructor(BaseModel):
 class Solicitud(BaseModel):
     Id_Solicitud: int
     #email: str
+    
+class Inscripcion(BaseModel):
+    Id_Especialidad: int
+    primer_Nombre: str
+    segundo_Nombre: Optional[str] = None
+    primer_Apellido: str
+    segundo_Apellido: Optional[str] = None
+    mail: str
+    Descripción: Optional[str] = None
+    ImagenUrl: Optional[str] = None

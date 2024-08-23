@@ -6,12 +6,12 @@ from utils.database import fetch_query_as_json
 import json
 from typing import List, Dict, Union
 
-from models.Instructores import SolicitudInstructor, Solicitud
+from models.Instructores import SolicitudInstructor, Solicitud, Inscripcion
 
 from controllers.firebase import register_user_firebase, login_user_firebase
-from controllers.instructores import get_instructores_info, get_SolicitudesInstructor, post_Instructores, rechazar_Solicitud, get_especialidades, get_categorias
+from controllers.instructores import get_instructores_info, get_SolicitudesInstructor, post_Instructores, rechazar_Solicitud, get_especialidades, get_categorias, create_solicitud
 from utils.security import validate
-from utils.sendmail import password_reset_email, welcome_email
+from utils.sendmail import password_reset_email, welcome_email, rejection_email
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -63,15 +63,19 @@ async def get_solicitudes_instructor(request: Request):
     return await get_SolicitudesInstructor()
 
 @app.post("/solicitud")
-@validate
-async def inst(inst: Solicitud):
+# @validate
+async def instapp(inst: Solicitud):
     return await post_Instructores(inst)
     
     
-@app.put("/solicitudr/{Id_Solicitud}")
-@validate
-async def inst(inst: Solicitud):
+@app.put("/solicitudrtd")
+# @validate
+async def instrej(inst: Solicitud):
    return await rechazar_Solicitud(inst)
+
+@app.post("/inscripcion")
+async def inscripcion(inscripcion: Inscripcion):
+    return await create_solicitud(inscripcion)
 
 @app.get("/especialidades")
 async def especialidades():
@@ -95,6 +99,14 @@ async def bienvenida(request: MailSend):
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
     return result
+
+@app.post("/correorechazo")
+async def send_rejection_email(mail: MailSend):
+    result = await rejection_email(mail.email)
+    if result["success"]:
+        return {"message": result["message"]}
+    else:
+        raise HTTPException(status_code=500, detail=result["message"])
 
 
 @app.post("/prueba")
