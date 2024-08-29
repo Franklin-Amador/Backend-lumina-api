@@ -26,7 +26,7 @@ class SolicitudInstructor(BaseModel):
 
 class Solicitud(BaseModel):
     Id_Solicitud: int
-    #email: str
+    email: Optional[str] = None
     
 class Inscripcion(BaseModel):
     Id_Especialidad: int

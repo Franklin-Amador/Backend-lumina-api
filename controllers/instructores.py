@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 
 from utils.database import fetch_query_as_json, get_db_connection
-from utils.sendmail import welcome_email
+from utils.sendmail import welcome_email, rejection_email, solicitud_mail
 from models.Instructores import Solicitud, Inscripcion
 import json
 import random
@@ -151,13 +151,15 @@ async def rechazar_Solicitud(inst: Solicitud):
                 (inst.Id_Solicitud,)
             )
             conn.commit()
+            
+            await rejection_email(inst.email)
             return {
                 "success": True,
                 "message":  "Solicitud rechazada exitosamente"
             }
         except Exception as e:
             conn.rollback()
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail="aqui"+str(e))
         finally:
             cursor.close()
             conn.close()    
@@ -201,14 +203,16 @@ async def create_solicitud(solicitud: Solicitud):
         solicitud.ImagenUrl
     )
     try:
+        await solicitud_mail(solicitud.mail)
         # Ejecutar la consulta de inserción
-        result = await fetch_query_as_json(query, params, commit=True)
+        await fetch_query_as_json(query, params, commit=True)
         return {
             "message": "Solicitud enviada exitosamente",
             "success": True
         }
+       
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="No se pudo enviar la solicitud: " + str(e))
    

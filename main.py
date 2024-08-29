@@ -68,7 +68,7 @@ async def instapp(inst: Solicitud):
     return await post_Instructores(inst)
     
     
-@app.put("/solicitudrtd")
+@app.put("/solicitud/rechazo")
 # @validate
 async def instrej(inst: Solicitud):
    return await rechazar_Solicitud(inst)

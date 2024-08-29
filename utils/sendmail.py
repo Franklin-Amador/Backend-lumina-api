@@ -77,7 +77,7 @@ async def welcome_email(email: str, password: str):
         return {"success": False, "message": f"Error al enviar el correo de bienvenida: {str(e)}"}
     
 # * Función para enviar el correo de rechazo
-async def rejection_email(email: MailSend):
+async def rejection_email(email: str):
     try:
         # Configurar yagmail
         yag = yagmail.SMTP(EMAIL_USERNAME, EMAIL_PASSWORD)
@@ -94,3 +94,22 @@ async def rejection_email(email: MailSend):
     except Exception as e:
         print(f"Error al enviar el correo de rechazo: {e}")
         return {"success": False, "message": f"Error al enviar el correo de rechazo: {str(e)}"}
+    
+# * Función para enviar el correo de solicitud
+async def solicitud_mail(email: MailSend):
+    try:
+        # Configurar yagmail
+        yag = yagmail.SMTP(EMAIL_USERNAME, EMAIL_PASSWORD)
+
+        # Enviar el correo
+        subject = "Solicitud de registro"
+        contents = f"Tu solicitud ha sido enviada con éxito. Pronto recibirás una respuesta de la administración de Lumina."
+                    
+        yag.send(to=email, subject=subject, contents=contents)
+                    
+        print("Correo de solicitud enviado con éxito")
+        return {"success": True, "message": "Correo de solicitud enviado"}
+
+    except Exception as e:
+        print(f"Error al enviar el correo de solicitud: {e}")
+        return {"success": False, "message": f"Error al enviar el correo de solicitud: {str(e)}"}
